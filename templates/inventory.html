@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/5955/5955184.png">
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<title>Inventory Page</title>
+<style>
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #C7D2FE;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: 700;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: red;
+  font-size: 14px;
+}
+
+button:hover {
+  text-decoration: underline;
+}
+
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+</style>
+</head>
+<body>
+
+  <nav class="bg-gray-800">
+  <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+    <div class="relative flex h-16 items-center justify-between">
+      <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+        <!-- Mobile menu button-->
+        <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+          <span class="absolute -inset-0.5"></span>
+          <span class="sr-only">Open main menu</span>
+          <!--
+            Icon when menu is closed.
+
+            Menu open: "hidden", Menu closed: "block"
+          -->
+          <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+          <!--
+            Icon when menu is open.
+
+            Menu open: "block", Menu closed: "hidden"
+          -->
+          <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+        <div class="flex flex-shrink-0 items-center">
+          <img class="h-8 w-auto" src="https://cdn-icons-png.flaticon.com/128/5955/5955184.png">
+        </div>
+        <div class="hidden sm:ml-6 sm:block">
+          <div class="flex space-x-4">
+            <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+            <a href="index.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Dashboard</a>
+            <a href="orders.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Orders</a>
+            <a href="inventory.html" class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium">Inventory</a>
+            <a href="profit.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Profit</a>
+            <a href="analytics.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Analytics</a>
+          </div>
+        </div>
+      </div>
+      <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+        <button id="viewSeller" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">View Seller</button>
+        <button id="openForm" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Add Seller</button>
+        <button id="openseller" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Add Product</button>
+      </div>
+    </div>
+  </div>
+
+  
+  
+
+  <!-- Mobile menu, show/hide based on menu state. -->
+  <div class="sm:hidden" id="mobile-menu">
+    <div class="space-y-1 px-2 pb-3 pt-2">
+      <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+      <a href="index.html" class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Dashboard</a>
+      <a href="orders.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Orders</a>
+      <a href="inventory.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Inventory</a>
+      <a href="profit.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Profit</a>
+      <a href="analytics.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Analytics</a>
+    </div>
+  </div>
+</nav>
+
+<div id="addProduct" class="modal ">
+  <div class="modal-content">
+    <span class="close" id="close1">&times;</span>
+    <form class="mb-4" method="POST" action="/newproduct">
+      <div class="flex flex-wrap items-center gap-4 justify-evenly">
+        <input type="text" name="productId" id="productId" placeholder="Product ID" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+        <input type="text" name="productName" id="productName" placeholder="Product Name" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+        <input type="number" name="productQuantity" id="productQuantity" min="1" max="" placeholder="Quantity" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+        <input type="number" name="productPrice" id="productPrice" placeholder="Price" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+        <input type="number" name="productwprice" id="productwprice" placeholder="wholesale Price" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+        <select name="suplier_id" id="suplier_id" class="w-full sm:w-1/12 p-2 border rounded-md" required>
+          <option value="s001">S001</option>
+          <option value="s002">S002</option>
+          <option value="s003">S003</option>
+          <option value="s004">S004</option>
+          <option value="s005">S005</option>
+          <option value="s006">S006</option>
+          <option value="s007">S007</option>
+      </select>
+          <button type="submit" class="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-md">Add Product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="addseller" class="modal ">
+  <div class="modal-content">
+    <span class="close" id="close2">&times;</span>
+    <form class="mb-4" method="POST" action="/newseller">
+      <div class="flex flex-wrap items-center gap-4 justify-evenly">
+        <input type="text" name="supplier_id" id="supplier_id" placeholder="Supplier ID" class="w-full sm:w-1/6 p-2 border rounded-md" required>
+        <input type="text" name="supplier_name" id="supplier_name" placeholder="Supplier Name" class="w-full sm:w-1/6 p-2 border rounded-md" required>
+        <input type="number" name="contact" id="contact" placeholder="Contact" class="w-full sm:w-1/6 p-2 border rounded-md" required>
+        <button type="submit" class="w-full sm:w-auto bg-blue-500 text-white py-2 px-4 rounded-md">Add Seller</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="sellerdetails" class="modal ">
+  <div class="modal-content">
+    <span class="close" id="close3">&times;</span>
+    <table >
+      <thead></thead>
+      <tr>
+        <th>Seller id</th>
+        <th>Seller Name</th>
+        <th>Contact</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="selleritems"></tbody>
+    </table>
+    
+  </div>
+</div>
+
+
+<div class="container">
+  <h1>Inventory</h1>
+  <table id="productTable">
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Action</th>
+
+      </tr>
+    </thead>
+    <tbody id="productsItems">
+      <!-- Product items will be dynamically added here -->
+    </tbody>
+  </table>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetchProducts();
+    fetchSeller();
+});
+
+function fetchProducts() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/get_products', true);  // Update the URL to match your Flask route
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            // Parse the JSON response
+            var response = JSON.parse(xhr.responseText);
+            
+            // Check if the response contains the "products" array
+            if (response.products) {
+                // Store the product details array in the variable "products"
+                var products = response.products;
+                console.log(products)
+                
+                // Get the tbody element where product information will be appended
+                var productsItems = document.getElementById("productsItems");
+
+                // Loop through each product in the products array
+                products.forEach(function(product) {
+                    // Create a new table row for each product
+                    var productRow = document.createElement("tr");
+
+                    // Create table cells for product information
+                    var productIdCell = document.createElement("td");
+                    productIdCell.textContent = product.product_id;
+
+                    var productNameCell = document.createElement("td");
+                    productNameCell.textContent = product.product_name;
+
+                    var productQuantityCell = document.createElement("td");
+                    productQuantityCell.textContent = product.quantity;
+
+                    var productPriceCell = document.createElement("td");
+                    productPriceCell.textContent = "₹" + product.MRP.toFixed(2);
+
+                    
+
+                    var deleteButtonCell = document.createElement("td");
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = "Delete";
+                    deleteButton.addEventListener("click", function() {
+                      var productId = product.product_id;
+    
+                    // Assuming you're using fetch API for making AJAX requests
+                    fetch('/deleteProduct', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ productId: productId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle the response from the server if needed
+                        console.log('Server response:', data);
+                        // Optionally, remove the productRow from the DOM after successful deletion
+                        productRow.remove();
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with your fetch operation:', error);
+                    });
+                    });
+                    deleteButtonCell.appendChild(deleteButton);
+
+                    // Append cells to the row
+                    productRow.appendChild(productIdCell);
+                    productRow.appendChild(productNameCell);
+                    productRow.appendChild(productQuantityCell);
+                    productRow.appendChild(productPriceCell);
+                    productRow.appendChild(deleteButtonCell);
+
+                    // Append the row to the tbody
+                    productsItems.appendChild(productRow);
+                });
+            } else {
+                console.error('Error: Products array not found in the response');
+            }
+        } else {
+            console.error('Error fetching product details: ' + xhr.status);
+        }
+    };
+    xhr.send();
+}
+</script>
+
+<script>
+  // Get the modal
+  var modal1 = document.getElementById("addProduct");
+  var modal2 = document.getElementById("addseller");
+  var modal3 = document.getElementById("sellerdetails");
+
+  
+  
+  // Get the button that opens the modal
+  var btn1 = document.getElementById("openseller");
+  var btn2 = document.getElementById("openForm");
+  var btn3 = document.getElementById("viewSeller");
+
+  
+  
+  // Get the <span> element that closes the modal
+  var span1 = document.getElementById("close1");
+  var span2 = document.getElementById("close2");
+  var span3 = document.getElementById("close3");
+  
+  
+  // When the user clicks on the button, open the modal
+  btn1.onclick = function() {
+    modal1.style.display = "block";
+  }
+  
+  btn2.onclick = function() {
+    modal2.style.display = "block";
+  }
+
+  btn3.onclick = function() {
+    modal3.style.display = "block";
+    
+  }
+  
+  // When the user clicks on <span> (x), close the modal
+  span1.onclick = function() {
+    modal1.style.display = "none";
+  
+  }
+  
+  span2.onclick = function() {
+    modal2.style.display = "none";
+  
+  }
+
+  span3.onclick = function() {
+    modal3.style.display = "none";
+  
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal1 || event.target == span1 || event.target == modal2 || event.target == span2 || event.target == modal3 || event.target == span3) {
+      modal1.style.display = "none";
+      modal2.style.display = "none";
+      modal3.style.display = "none";
+    }
+  }
+
+
+
+  function fetchSeller() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/get_seller', true);  // Update the URL to match your Flask route
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            // Parse the JSON response
+            var response = JSON.parse(xhr.responseText);
+            
+            // Check if the response contains the "products" array
+            if (response.sellers) {
+                // Store the product details array in the variable "products"
+                var sellers = response.sellers;
+                console.log(sellers)
+                
+                // Get the tbody element where product information will be appended
+                var selleritems = document.getElementById("selleritems");
+
+                // Loop through each product in the products array
+                sellers.forEach(function(seller) {
+                    // Create a new table row for each product
+                    var sellerrow = document.createElement("tr");
+
+                    // Create table cells for product information
+                    var selleridcell = document.createElement("td");
+                    selleridcell.textContent = seller.supplier_id;
+
+                    var sellernamecell = document.createElement("td");
+                    sellernamecell.textContent = seller.supplier_name;
+
+                    var sellercontactcell = document.createElement("td");
+                    sellercontactcell.textContent = seller.contact;
+
+                    
+                    var deleteButtonCell = document.createElement("td");
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = "Delete";
+                    deleteButton.addEventListener("click", function() {
+                      var sellerId = seller.supplier_id;
+    
+                    // Assuming you're using fetch API for making AJAX requests
+                    fetch('/deleteSeller', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ sellerId: sellerId })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Handle the response from the server if needed
+                        console.log('Server response:', data);
+                        // Optionally, remove the productRow from the DOM after successful deletion
+                        sellerrow.remove();
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with your fetch operation:', error);
+                    });
+                    });
+                    deleteButtonCell.appendChild(deleteButton);
+
+                    // Append cells to the row
+                    sellerrow.appendChild(selleridcell);
+                    sellerrow.appendChild(sellernamecell);
+                    sellerrow.appendChild(sellercontactcell);
+                    sellerrow.appendChild(deleteButtonCell);
+
+                    // Append the row to the tbody
+                    selleritems.appendChild(sellerrow);
+                });
+            } else {
+                console.error('Error: Products array not found in the response');
+            }
+        } else {
+            console.error('Error fetching product details: ' + xhr.status);
+        }
+    };
+    xhr.send();
+}
+  
+  
+  </script>
+</body>
+</html>

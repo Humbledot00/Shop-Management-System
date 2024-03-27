@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<title>Product Analytics Graph</title>
+<link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/128/5955/5955184.png">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+     body {
+        background-color: #C7D2FE;
+    }
+.date-selector {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.date-selector label {
+    margin-right: 10px;
+}
+
+.date-selector input[type="date"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.date-selector button {
+    padding: 8px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+canvas{
+    width: 80%;
+    height: auto;
+}
+
+.item{
+    margin-left: 30px;
+}
+</style>
+</head>
+<body>
+    <nav class="bg-gray-800">
+        <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
+          <div class="relative flex h-16 items-center justify-between">
+            <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
+              <!-- Mobile menu button-->
+              <button type="button" class="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white" aria-controls="mobile-menu" aria-expanded="false">
+                <span class="absolute -inset-0.5"></span>
+                <span class="sr-only">Open main menu</span>
+                <!--
+                  Icon when menu is closed.
+      
+                  Menu open: "hidden", Menu closed: "block"
+                -->
+                <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+                <!--
+                  Icon when menu is open.
+      
+                  Menu open: "block", Menu closed: "hidden"
+                -->
+                <svg class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
+              <div class="flex flex-shrink-0 items-center">
+                <img class="h-8 w-auto" src="https://cdn-icons-png.flaticon.com/128/5955/5955184.png">
+              </div>
+              <div class="hidden sm:ml-6 sm:block">
+                <div class="flex space-x-4">
+                  <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+                  <a href="index.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Dashboard</a>
+                  <a href="orders.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Orders</a>
+                  <a href="inventory.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Inventory</a>
+                  <a href="profit.html" class="text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium">Profit</a>
+                  <a href="analytics.html" class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium">Analytics</a>
+                </div>
+              </div>
+            </div>
+            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            </div>
+          </div>
+        </div>
+      
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="sm:hidden" id="mobile-menu">
+          <div class="space-y-1 px-2 pb-3 pt-2">
+            <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+            <a href="index.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium" aria-current="page">Dashboard</a>
+            <a href="orders.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Orders</a>
+            <a href="inventory.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Inventory</a>
+            <a href="profit.html" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md px-3 py-2 text-base font-medium">Profit</a>
+            <a href="analytics.html" class="bg-gray-900 text-white block rounded-md px-3 py-2 text-base font-medium">Analytics</a>
+        </div>
+        </div>
+      </nav>
+<div class="date-selector">
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate" name="startDate">
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate" name="endDate">
+    <button onclick="updateGraph()">Update Graph</button>
+    <h1 class="item" id="mostbought">Most Bought Item: </h1>
+</div>
+<canvas id="productAnalyticsChart"></canvas>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Set default start and end dates to one month ago and today respectively
+    const endDate = new Date().toISOString().split('T')[0];
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
+    const startDateString = startDate.toISOString().split('T')[0];
+    document.getElementById('startDate').value = startDateString;
+    document.getElementById('endDate').value = endDate;
+
+    fetchProductAnalytics();
+});
+
+function fetchProductAnalytics() {
+    fetch('/get_product_analytics')
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        const filteredData = filterDataByDate(data, startDate, endDate);
+        processData(filteredData);
+    })
+    .catch(error => {
+        console.error('Error fetching product analytics:', error);
+    });
+}
+
+function filterDataByDate(data, startDate, endDate) {
+    return data.filter(entry => {
+        const entryDate = new Date(entry.date).toISOString().split('T')[0];
+        return entryDate >= startDate && entryDate <= endDate;
+    });
+}
+
+function processData(productAnalytics) {
+    // Assuming productAnalytics is an array of objects with properties 'product_id' and 'date'
+    
+    // Filter data based on date range
+    const startDate = new Date(document.getElementById('startDate').value);
+    const endDate = new Date(document.getElementById('endDate').value);
+    
+    const filteredData = productAnalytics.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate >= startDate && entryDate <= endDate;
+    });
+    
+    // Here you can aggregate the filtered data to find the most bought item over the period
+    // You can use any method you prefer, such as counting occurrences of each product_id
+    
+    // For simplicity, let's say you want to count occurrences of each product_id
+    const productCount = {};
+    filteredData.forEach(entry => {
+        const productId = entry.product_id;
+        productCount[productId] = (productCount[productId] || 0) + 1;
+    });
+    
+    // Now find the product with maximum count
+    let mostBoughtProductId;
+    let maxCount = 0;
+    for (const productId in productCount) {
+        if (productCount.hasOwnProperty(productId)) {
+            if (productCount[productId] > maxCount) {
+                mostBoughtProductId = productId;
+                maxCount = productCount[productId];
+            }
+        }
+    }
+    
+    // You can now use mostBoughtProductId to fetch additional details of the product if needed
+    // Then proceed to plot the graph
+    
+    // For now, let's just log the most bought product ID
+    document.getElementById('mostbought').textContent = `Most Bought Item: ${mostBoughtProductId}`;
+    
+    // You can use a charting library like Chart.js to plot the graph
+    // Example usage:
+    plotGraph(productCount);
+}
+
+function plotGraph(productCount) {
+    // Retrieve the canvas element
+    const canvas = document.getElementById('productAnalyticsChart');
+    
+    // Check if there's already a chart instance associated with this canvas
+    if (canvas.chart) {
+        // If a chart instance exists, destroy it
+        canvas.chart.destroy();
+    }
+
+    // Create a new chart instance
+    const ctx = canvas.getContext('2d');
+    canvas.chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: Object.keys(productCount),
+            datasets: [{
+                label: 'Product Analytics',
+                data: Object.values(productCount),
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+
+function updateGraph() {
+    // Add code here to update the graph based on the selected date range
+    fetchProductAnalytics();
+}
+</script>
+</body>
+</html>
